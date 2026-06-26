@@ -60,12 +60,16 @@ function Tex({ children, k }) {
   const parts = []; let last = 0, key = 0, m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) parts.push(<span key={key++}>{text.slice(last, m.index)}</span>);
-    const display = m[1] !== undefined;
-    const src = display ? m[1] : m[2];
+    const isBlockSyntax = m[1] !== undefined;
+    const src = isBlockSyntax ? m[1] : m[2];
+    // Only give an equation the full centered-block treatment when it genuinely needs
+    // multi-row layout (aligned/cases/matrix). A short one-liner like "x_1 = 1.2" stays
+    // inline at text size instead of becoming its own oversized centered paragraph.
+    const needsDisplay = isBlockSyntax && /\\begin\{/.test(src);
     try {
-      const html = window.katex.renderToString(src, { displayMode: display, throwOnError: false, output: "html" });
+      const html = window.katex.renderToString(src, { displayMode: needsDisplay, throwOnError: false, output: "html" });
       parts.push(<span key={key++}
-        style={display ? {display:"block",textAlign:"center",margin:"6px 0",overflowX:"auto"} : {}}
+        style={needsDisplay ? {display:"block",textAlign:"center",margin:"6px 0",overflowX:"auto"} : {}}
         dangerouslySetInnerHTML={{ __html: html }} />);
     } catch { parts.push(<span key={key++}>{`$${src}$`}</span>); }
     last = re.lastIndex; }
@@ -80,10 +84,28 @@ function normalizeMathBlocks(content) {
   return content.replace(/\$\$[\s\S]*?\$\$/g, m => m.replace(/\s*\n\s*/g, ' '));
 }
 
+// Some generated answers end a display equation's sentence with the trailing period on
+// its own line (e.g. an equation line, a blank line, then just "."). Glue any lone
+// punctuation-only line onto the previous non-blank line instead of letting it become
+// its own empty-looking paragraph.
+function mergeOrphanPunctuation(lines) {
+  const out = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (/^[.,;:]$/.test(t)) {
+      let j = out.length - 1;
+      while (j >= 0 && out[j].trim() === '') j--;
+      if (j >= 0) { out[j] = out[j] + t; continue; }
+    }
+    out.push(line);
+  }
+  return out;
+}
+
 // Renders AI-generated explanation text — handles ## / ### headers, **bold**, and $LaTeX$
 function ExplRenderer({ content, color, k }) {
   if (!content) return null;
-  const lines = normalizeMathBlocks(content).split('\n');
+  const lines = mergeOrphanPunctuation(normalizeMathBlocks(content).split('\n'));
   const out = [];
   let i = 0;
   while (i < lines.length) {
@@ -1209,6 +1231,14 @@ export default function MMLPlanner() {
   const [hints,        setHints]        = useState({});   // secId -> [{hint1,hint2,answer}, ...]
   const [hintsLoading, setHintsLoading] = useState({});    // secId -> bool
   const [reveal,        setReveal]      = useState({});    // `${secId}-${ei}` -> 0|1|2|3
+  const [isMobile, setIsMobile] = useState(typeof window !== "undefined" && window.innerWidth <= 760);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 760);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   // Progress is per-browser (localStorage), not server-side — so multiple visitors
   // sharing this deployment don't clobber each other's completed-section state.
@@ -1400,10 +1430,18 @@ ${exList}`;
                   color:txt, fontFamily:"'Inter',sans-serif", fontSize:13.5, overflow:"hidden" }}>
 
       {/* HEADER */}
-      <div style={{ padding:"14px 24px", borderBottom:`1px solid ${bord}`, display:"flex",
+      <div style={{ padding: isMobile ? "10px 14px" : "14px 24px", borderBottom:`1px solid ${bord}`, display:"flex",
                     alignItems:"center", justifyContent:"space-between", flexShrink:0,
                     background:"rgba(26,29,33,0.9)", boxShadow:"0 1px 0 rgba(255,255,255,0.04)" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+        <div style={{ display:"flex", alignItems:"center", gap: isMobile ? 8 : 12 }}>
+          {isMobile && (
+            <button onClick={() => setMobileNavOpen(p => !p)} aria-label="Toggle chapter list"
+              style={{ width:32, height:32, borderRadius:8, border:`1px solid ${bord}`, background:"transparent",
+                       color:txt, fontSize:16, cursor:"pointer", flexShrink:0, display:"flex",
+                       alignItems:"center", justifyContent:"center" }}>
+              ☰
+            </button>
+          )}
           <div style={{ width:32, height:32, borderRadius:10, display:"flex", alignItems:"center",
                         justifyContent:"center", flexShrink:0,
                         background:"linear-gradient(135deg, #f0a030, #f472b6, #60a5fa)",
@@ -1412,14 +1450,16 @@ ${exList}`;
             Σ
           </div>
           <div>
-            <div style={{ fontFamily:"'Lora',serif", fontSize:17, fontWeight:700, color:txt, lineHeight:1.2 }}>
+            <div style={{ fontFamily:"'Lora',serif", fontSize: isMobile ? 15 : 17, fontWeight:700, color:txt, lineHeight:1.2 }}>
               MML Study Planner
             </div>
-            <div style={{ color:muted, fontSize:11, marginTop:1 }}>Mathematics for Machine Learning · Part I</div>
+            {!isMobile && (
+              <div style={{ color:muted, fontSize:11, marginTop:1 }}>Mathematics for Machine Learning · Part I</div>
+            )}
           </div>
         </div>
         <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-          <span style={{ fontSize:11.5, color:muted }}>{doneSecs}/{totalSecs} sections</span>
+          {!isMobile && <span style={{ fontSize:11.5, color:muted }}>{doneSecs}/{totalSecs} sections</span>}
           <div style={{ position:"relative", width:38, height:38, flexShrink:0 }}>
             <svg width={38} height={38} style={{ transform:"rotate(-90deg)" }}>
               <circle cx={19} cy={19} r={ringR} fill="none" stroke="#30363d" strokeWidth={4} />
@@ -1438,11 +1478,24 @@ ${exList}`;
       </div>
 
       {/* BODY */}
-      <div style={{ display:"flex", flex:1, overflow:"hidden" }}>
+      <div style={{ display:"flex", flex:1, overflow:"hidden", position:"relative" }}>
+
+        {/* Backdrop behind the mobile drawer */}
+        {isMobile && mobileNavOpen && (
+          <div onClick={() => setMobileNavOpen(false)}
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:20 }} />
+        )}
 
         {/* SIDEBAR */}
-        <div style={{ width:236, borderRight:`1px solid ${bord}`, overflowY:"auto",
-                      padding:"16px 10px", flexShrink:0, background:"rgba(26,29,33,0.6)" }}>
+        {(!isMobile || mobileNavOpen) && (
+        <div style={isMobile ? {
+                      position:"fixed", top:0, bottom:0, left:0, width:"78%", maxWidth:280, zIndex:21,
+                      borderRight:`1px solid ${bord}`, overflowY:"auto",
+                      padding:"16px 10px", background:"#1a1d21", boxShadow:"4px 0 24px rgba(0,0,0,0.4)",
+                    } : {
+                      width:236, borderRight:`1px solid ${bord}`, overflowY:"auto",
+                      padding:"16px 10px", flexShrink:0, background:"rgba(26,29,33,0.6)",
+                    }}>
           <div style={{ fontSize:10, color:muted, textTransform:"uppercase", letterSpacing:1.2,
                         padding:"0 10px 10px", fontWeight:600 }}>Chapters</div>
           {PLAN.map((c,i) => {
@@ -1451,7 +1504,8 @@ ${exList}`;
             const active = i === selCh;
             const cComplete = cPct === 100;
             return (
-              <button key={c.id} className="mml-nav-item" onClick={() => { setSelCh(i); setOpenSec(null); setReveal({}); }}
+              <button key={c.id} className="mml-nav-item"
+                onClick={() => { setSelCh(i); setOpenSec(null); setReveal({}); setMobileNavOpen(false); }}
                 style={{ display:"block", width:"100%", textAlign:"left", padding:"9px 11px",
                          borderRadius:9, marginBottom:3, border:"none", cursor:"pointer",
                          background: active ? `${c.color}1c` : "transparent" }}>
@@ -1484,12 +1538,13 @@ ${exList}`;
             );
           })}
         </div>
+        )}
 
         {/* MAIN */}
-        <div style={{ flex:1, overflowY:"auto", padding:"24px 28px" }}>
-          <div style={{ marginBottom:22 }}>
-            <div style={{ display:"flex", alignItems:"baseline", gap:12, marginBottom:6 }}>
-              <span style={{ fontFamily:"'Lora',serif", fontSize:23, fontWeight:700, color:ch.color }}>
+        <div style={{ flex:1, overflowY:"auto", padding: isMobile ? "16px 14px" : "24px 28px" }}>
+          <div style={{ marginBottom: isMobile ? 16 : 22 }}>
+            <div style={{ display:"flex", alignItems:"baseline", gap:12, marginBottom:6, flexWrap:"wrap" }}>
+              <span style={{ fontFamily:"'Lora',serif", fontSize: isMobile ? 19 : 23, fontWeight:700, color:ch.color }}>
                 {ch.num}. {ch.title}
               </span>
               <span style={{ fontSize:11.5, color:muted, fontFamily:"'JetBrains Mono',monospace" }}>
@@ -1512,10 +1567,10 @@ ${exList}`;
                                          "--accent": ch.color }}>
                 <button className="mml-nav-item" onClick={() => openSection(sec.id)}
                   style={{ display:"block", position:"relative", overflow:"hidden", width:"100%",
-                           padding:"13px 16px", background: isOpen ? `${ch.color}10` : surf,
+                           padding: isMobile ? "11px 12px" : "13px 16px", background: isOpen ? `${ch.color}10` : surf,
                            border:"none", cursor:"pointer", textAlign:"left" }}>
                   <span style={{ position:"absolute", right:10, top:-10, fontFamily:"'Lora',serif",
-                                 fontWeight:700, fontSize:50, lineHeight:1, color:`${ch.color}16`,
+                                 fontWeight:700, fontSize: isMobile ? 34 : 50, lineHeight:1, color:`${ch.color}16`,
                                  pointerEvents:"none", userSelect:"none" }}>
                     {sec.id.split(".")[1]}
                   </span>
@@ -1523,7 +1578,7 @@ ${exList}`;
                     <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10.5, color:ch.color,
                                     marginRight:12, minWidth:30, fontWeight:600 }}>§{sec.id}</span>
                     <span style={{ flex:1, fontWeight:500, color:txt, fontSize:13.5 }}>{sec.title}</span>
-                    <span style={{ fontSize:10.5, color:muted, marginRight:12 }}>pp. {sec.pages}</span>
+                    {!isMobile && <span style={{ fontSize:10.5, color:muted, marginRight:12 }}>pp. {sec.pages}</span>}
                     {isDone && <span style={{ fontSize:10, color:"#4ade80", marginRight:10 }}>✓</span>}
                     <span className="mml-chevron" style={{ color:muted, fontSize:11,
                                   transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▾</span>
@@ -1665,7 +1720,7 @@ ${exList}`;
                             )}
 
                             {h && (
-                              <div style={{ marginTop:8, display:"flex", gap:6 }}>
+                              <div style={{ marginTop:8, display:"flex", gap:6, flexWrap:"wrap" }}>
                                 <button className="mml-btn" onClick={() => toggleReveal(sec.id, ei, "h1")}
                                   style={{ padding:"5px 13px", borderRadius:99, fontSize:11.5, fontWeight:600,
                                            background: rv.h1 ? `${ch.color}15` : "transparent",
