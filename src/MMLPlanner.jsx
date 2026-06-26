@@ -169,8 +169,8 @@ const PLAN = [
         why:"Every ML model reduces to $A\\mathbf{x}=\\mathbf{b}$ \u2014 regression, constrained optimisation, neural net forward pass.",
         py:"## Solving with NumPy\nFor small dense systems, use `np.linalg.solve`, which is more efficient and numerically stable than computing $A^{-1}$ explicitly.\n\n```python\nimport numpy as np\n\nA = np.array([[2,1,-1],[-3,-1,2],[-2,1,2]])\nb = np.array([8,-11,-3])\n\nx = np.linalg.solve(A, b)\nprint(x)  # [2. 3. -1.]\n```\n\nAvoid `np.linalg.inv(A) @ b` -- it's slower and less numerically stable for larger systems.",
         resources:[
-          {name:"Strang 18.06 \u2014 Elimination (Lec 2)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
-          {name:"Paul's Notes \u2014 Linear Systems", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
+          {name:"Strang 18.06 \u2014 Elimination (Lec 2)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-2-elimination-with-matrices/"},
+          {name:"Paul's Notes \u2014 Linear Systems", url:"https://tutorial.math.lamar.edu/Classes/Alg/SystemsTwoVrble.aspx"},
         ],
         exs:[
           {q:"Solve the $3\\times 3$ system: $2x+y-z=8$, $-3x-y+2z=-11$, $-2x+y+2z=-3$.",ref:"Strang 18.06, PS1"},
@@ -184,7 +184,7 @@ const PLAN = [
         py:"## Matrix Operations with NumPy\nNumPy arrays support matrix multiplication via `@` (or `np.matmul`), elementwise ops via `*`, and `.T` for transpose.\n\n```python\nimport numpy as np\n\nA = np.array([[1,2],[3,4]])\nB = np.array([[0,1],[1,0]])\n\nprint(A @ B)      # matrix product\nprint(A * B)      # elementwise (Hadamard) product\nprint(A.T)        # transpose\nprint(A.T @ A)    # symmetric Gram matrix\n```\n\n**Watch out:** `*` is elementwise, not matrix multiplication -- a common source of silent bugs when porting math to code.",
         resources:[
           {name:"3Blue1Brown \u2014 Linear Transformations", url:"https://www.youtube.com/watch?v=kYB8IZa5AuE"},
-          {name:"Khan Academy \u2014 Matrix multiplication", url:"https://www.khanacademy.org/math/linear-algebra"},
+          {name:"Khan Academy \u2014 Matrix multiplication", url:"https://www.khanacademy.org/math/linear-algebra/matrix-transformations/composition-of-transformations/v/linear-algebra-matrix-product-examples"},
         ],
         exs:[
           {q:"Let $A=\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$, $B=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$. Compute $AB$ and $BA$. Does $AB=BA$?",ref:"Original"},
@@ -197,8 +197,8 @@ const PLAN = [
         why:"Gaussian elimination underpins matrix inverses, least-squares, and numerical linear algebra.",
         py:"## Row Reduction and the General Solution\nNumPy has no built-in RREF (it favors direct solves), but `sympy` reproduces the by-hand elimination from this section, and `scipy.linalg.null_space` gives a basis for the homogeneous solution space.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\nimport sympy as sp\n\nA = sp.Matrix([[1,2,-1],[2,4,1],[0,1,3]])\nrref, pivots = A.rref()\nprint(rref)        # row-reduced echelon form\nprint(pivots)      # pivot columns\n\n# Null space (homogeneous solutions) for a non-square A\nA2 = np.array([[1,2,0,-1],[1,2,1,0],[2,4,1,-1]])\nprint(null_space(A2))\n```",
         resources:[
-          {name:"Strang 18.06 \u2014 Elimination continued (Lec 3)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
-          {name:"Paul's Notes \u2014 RREF", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
+          {name:"Strang 18.06 \u2014 Elimination continued (Lec 3)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-3-multiplication-and-inverse-matrices/"},
+          {name:"Paul's Notes \u2014 RREF", url:"https://tutorial.math.lamar.edu/Classes/Alg/AugmentedMatrix.aspx"},
         ],
         exs:[
           {q:"Reduce $[A|\\mathbf{b}]$ to RREF for $A=\\begin{pmatrix}1&2&-1\\\\2&4&1\\\\0&1&3\\end{pmatrix}$, $\\mathbf{b}=(5,7,3)^T$. Identify pivot columns and state the unique solution.",ref:"Original"},
@@ -211,7 +211,7 @@ const PLAN = [
         why:"ML embedding spaces are vector spaces; understanding closure shapes how we design features and measure similarity.",
         py:"## Checking Subspace Membership Numerically\nThere's no single function that \"checks\" a subspace, but you can test whether a vector lies in $\\text{span}\\{\\mathbf{v}_1,\\dots,\\mathbf{v}_k\\}$ by solving a least-squares problem and checking the residual.\n\n```python\nimport numpy as np\n\nV = np.array([[1,0],[0,1],[1,1]]).T  # columns span a subspace of R^3\nx = np.array([2,3,5])\n\nc, *_ = np.linalg.lstsq(V, x, rcond=None)\nin_span = np.allclose(V @ c, x)\nprint(in_span)  # True: x = 2*v1 + 3*v2\n```",
         resources:[
-          {name:"Strang 18.06 \u2014 Vector Spaces (Lec 5)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Vector Spaces (Lec 5)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-5-transposes-permutations-spaces-r-n/"},
           {name:"Axler LADR \u2014 Chapter 1 (free PDF)", url:"https://linear.axler.net/"},
         ],
         exs:[
@@ -225,8 +225,10 @@ const PLAN = [
         why:"Redundant features are linearly dependent \u2014 detecting this prevents degenerate models and informs feature selection.",
         py:"## Testing Independence with Rank\nA set of vectors is linearly independent iff the matrix formed by stacking them as columns has full column rank -- check with `np.linalg.matrix_rank`.\n\n```python\nimport numpy as np\n\nV = np.array([[1,4,7],[2,5,8],[3,6,9]]).T  # v1, v2, v3 as columns\n\nrank = np.linalg.matrix_rank(V)\nprint(rank, V.shape[1])  # 2 3 -> dependent (rank < #vectors)\n```\n\n`matrix_rank` is more numerically robust than computing a determinant, especially for non-square or near-singular matrices.",
         resources:[
-          {name:"Strang 18.06 \u2014 Independence (Lec 7)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
-          {name:"Khan Academy \u2014 Linear independence", url:"https://www.khanacademy.org/math/linear-algebra"},
+          {name:"Strang 18.06 \u2014 Independence, Basis & Dimension (Lec 9)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-9-independence-basis-and-dimension/"},
+          {name:"Khan Academy \u2014 Introduction to linear independence", url:"https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/linear-independence/v/linear-algebra-introduction-to-linear-independence"},
+          {name:"Khan Academy \u2014 More on linear independence", url:"https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/linear-independence/v/more-on-linear-independence"},
+          {name:"Khan Academy \u2014 Span and linear independence example", url:"https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/linear-independence/v/span-and-linear-independence-example"},
         ],
         exs:[
           {q:"Are $\\mathbf{v}_1=(1,2,3)^T$, $\\mathbf{v}_2=(4,5,6)^T$, $\\mathbf{v}_3=(7,8,9)^T$ linearly independent? Set up and solve $c_1\\mathbf{v}_1+c_2\\mathbf{v}_2+c_3\\mathbf{v}_3=\\mathbf{0}$.",ref:"Original"},
@@ -239,8 +241,8 @@ const PLAN = [
         why:"The rank of a data matrix equals its true dimensionality \u2014 the foundation of PCA and dimensionality reduction.",
         py:"## Rank, Column Space, and Null Space\n`np.linalg.matrix_rank` gives $\\text{rank}(A)$ directly, while `scipy.linalg.null_space` returns an orthonormal basis for $\\text{null}(A)$ -- together they let you verify the rank-nullity theorem numerically.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\n\nA = np.array([[1,2,3],[2,4,6],[1,3,4]])\n\nr = np.linalg.matrix_rank(A)\nns = null_space(A)\nprint(r, ns.shape[1], A.shape[1])  # rank + nullity == n columns\n```\n\nFor a basis of the column space, use a QR decomposition (`np.linalg.qr(A)`) or take the pivot columns from `sympy`'s `.rref()`.",
         resources:[
-          {name:"Strang 18.06 \u2014 Basis & Dimension (Lec 9)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
-          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Independence, Basis & Dimension (Lec 9)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-9-independence-basis-and-dimension/"},
+          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-10-the-four-fundamental-subspaces/"},
         ],
         exs:[
           {q:"Find a basis for the column space and null space of $A=\\begin{pmatrix}1&2&3\\\\2&4&6\\\\1&3&4\\end{pmatrix}$. State $\\text{rank}(A)$ and verify the rank-nullity theorem.",ref:"Strang 18.06, PS3"},
@@ -254,7 +256,7 @@ const PLAN = [
         py:"## Kernel, Image, and Change of Basis\nThe kernel and image of a linear map $T$ come straight from its matrix: `null_space` for $\\ker(T)$, `matrix_rank` for $\\dim(\\text{Im}(T))$. A change-of-basis matrix is just the matrix whose columns are the new basis vectors.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\n\nT = np.array([[1,1],[2,-1],[1,0]])  # R^2 -> R^3\n\nker = null_space(T)                  # basis for ker(T)\nrank = np.linalg.matrix_rank(T)      # dim(Im(T))\nprint(ker.shape[1], rank, T.shape[1])  # rank-nullity: 0 + 2 = 2\n\n# Express x = (3,1) in basis B' = {(1,1), (1,-1)}\nBprime = np.array([[1,1],[1,-1]]).T\nx = np.array([3,1])\ncoords = np.linalg.solve(Bprime, x)\nprint(coords)  # [2. 1.]\n```",
         resources:[
           {name:"3Blue1Brown \u2014 Linear Transformations (essential)", url:"https://www.youtube.com/watch?v=kYB8IZa5AuE"},
-          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-10-the-four-fundamental-subspaces/"},
         ],
         exs:[
           {q:"For $T:\\mathbb{R}^2\\to\\mathbb{R}^3$, $T(x_1,x_2)=(x_1+x_2,\\ 2x_1-x_2,\\ x_1)$, write the transformation matrix, find $\\ker(T)$ and $\\text{Im}(T)$, and verify rank-nullity.",ref:"Original"},
@@ -286,7 +288,7 @@ const PLAN = [
         why:"$L^1$/$L^2$ regularisation and loss functions are norms. Choosing a norm = choosing how to penalise model complexity.",
         py:"## Computing Norms\nNumPy's `np.linalg.norm` computes any $L^p$ norm via the `ord` argument -- this is exactly the regularization penalty in ridge ($L^2$) and lasso ($L^1$) regression.\n\n```python\nimport numpy as np\n\nx = np.array([3.0, -4.0, 1.0])\n\nprint(np.linalg.norm(x, ord=2))   # Euclidean norm: 5.099...\nprint(np.linalg.norm(x, ord=1))   # Manhattan norm: 8.0\nprint(np.linalg.norm(x, ord=np.inf))  # max norm: 4.0\n```\n\nIn a loss function, `lambda * np.linalg.norm(w, ord=1)` is the lasso penalty; `lambda * np.linalg.norm(w)**2` is the ridge penalty.",
         resources:[
-          {name:"Khan Academy \u2014 Vector magnitude", url:"https://www.khanacademy.org/math/linear-algebra"},
+          {name:"Khan Academy \u2014 Vector dot product and length", url:"https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/vector-dot-product-and-vector-length"},
         ],
         exs:[
           {q:"Compute the $L^1$, $L^2$, and $L^\\infty$ norms of $\\mathbf{v}=(3,-4,0,2)^T$.",ref:"Original"},
@@ -299,8 +301,8 @@ const PLAN = [
         why:"Dot products measure similarity. Attention in transformers computes $\\mathbf{q}^T\\mathbf{k}/\\sqrt{d}$ \u2014 a scaled inner product.",
         py:"## Inner Products and the Gram Matrix\nThe standard dot product is `np.dot` or `@`. For a *generalized* inner product $\\langle\\mathbf{x},\\mathbf{y}\\rangle=\\mathbf{x}^TA\\mathbf{y}$ with symmetric positive-definite $A$, just sandwich $A$ in between.\n\n```python\nimport numpy as np\n\nx = np.array([1.0, 2.0])\ny = np.array([3.0, -1.0])\n\nprint(np.dot(x, y))          # standard inner product: 1.0\n\nA = np.array([[2,0],[0,1]])  # SPD matrix defines a new inner product\nprint(x @ A @ y)             # generalized inner product: 4.0\n```\n\nA matrix of pairwise inner products $\\langle\\mathbf{x}_i,\\mathbf{x}_j\\rangle$ is a **Gram matrix** -- compute it for a data matrix $X$ (rows = samples) with `X @ X.T`.",
         resources:[
-          {name:"Strang 18.06 \u2014 Orthogonality (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
-          {name:"Khan Academy \u2014 Dot product", url:"https://www.khanacademy.org/math/linear-algebra"},
+          {name:"Strang 18.06 \u2014 Orthogonality (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-14-orthogonal-vectors-and-subspaces/"},
+          {name:"Khan Academy \u2014 Proving dot product properties", url:"https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/proving-vector-dot-product-properties"},
         ],
         exs:[
           {q:"Compute $\\langle\\mathbf{u},\\mathbf{v}\\rangle$ for $\\mathbf{u}=(1,2,3)^T$ and $\\mathbf{v}=(-1,0,2)^T$. Find the angle between them.",ref:"Original"},
@@ -313,7 +315,7 @@ const PLAN = [
         why:"Distance metrics define 'similarity' in $k$-NN, clustering, and kernel methods.",
         py:"## Lengths and Distances\nLength is just the norm of a vector; distance between two points is the norm of their difference. `scipy.spatial.distance` provides many distance metrics directly.\n\n```python\nimport numpy as np\nfrom scipy.spatial.distance import euclidean, cityblock\n\nx = np.array([1.0, 2.0])\ny = np.array([4.0, 6.0])\n\nlength_x = np.linalg.norm(x)        # ||x||\ndist = np.linalg.norm(x - y)        # ||x - y||\nprint(length_x, dist)\n\nprint(euclidean(x, y))   # same as dist\nprint(cityblock(x, y))   # L1 (Manhattan) distance\n```",
         resources:[
-          {name:"Khan Academy \u2014 Distance formula", url:"https://www.khanacademy.org/math/linear-algebra"},
+          {name:"Khan Academy \u2014 Distance formula", url:"https://www.khanacademy.org/math/geometry/hs-geo-analytic-geometry/hs-geo-distance-and-midpoints/v/distance-formula"},
         ],
         exs:[
           {q:"Compute the Euclidean distance between $\\mathbf{x}=(2,-1,3)^T$ and $\\mathbf{y}=(0,1,1)^T$.",ref:"Original"},
@@ -326,7 +328,7 @@ const PLAN = [
         why:"Cosine similarity (NLP, search) is $\\cos\\theta=\\langle\\mathbf{x},\\mathbf{y}\\rangle/(\\|\\mathbf{x}\\|\\|\\mathbf{y}\\|)$. Orthogonal features are uncorrelated.",
         py:"## Angles and Orthogonality\nThe angle between vectors follows directly from the inner-product definition $\\cos\\omega=\\frac{\\langle\\mathbf{x},\\mathbf{y}\\rangle}{\\|\\mathbf{x}\\|\\|\\mathbf{y}\\|}$, and orthogonality is just $\\langle\\mathbf{x},\\mathbf{y}\\rangle=0$.\n\n```python\nimport numpy as np\n\nx = np.array([1.0, 0.0])\ny = np.array([1.0, 1.0])\n\ncos_omega = (x @ y) / (np.linalg.norm(x) * np.linalg.norm(y))\nomega = np.arccos(cos_omega)\nprint(np.degrees(omega))  # 45.0\n\n# Orthogonality check\nu, v = np.array([1,0]), np.array([0,1])\nprint(np.isclose(u @ v, 0))  # True\n```",
         resources:[
-          {name:"Khan Academy \u2014 Angle between vectors", url:"https://www.khanacademy.org/math/linear-algebra"},
+          {name:"Khan Academy \u2014 Defining the angle between vectors", url:"https://www.khanacademy.org/math/linear-algebra/vectors-and-spaces/dot-cross-products/v/defining-the-angle-between-vectors"},
         ],
         exs:[
           {q:"Find the angle between $\\mathbf{u}=(1,1,0)^T$ and $\\mathbf{v}=(0,1,1)^T$. Are they orthogonal?",ref:"Original"},
@@ -339,7 +341,7 @@ const PLAN = [
         why:"ONBs simplify computations dramatically. QR decomposition produces a numerically stable ONB.",
         py:"## Building an Orthonormal Basis\n`np.linalg.qr` performs Gram-Schmidt under the hood: the columns of $Q$ form an orthonormal basis for the column space of $A$.\n\n```python\nimport numpy as np\n\nA = np.array([[1.0, 1.0], [1.0, 0.0], [0.0, 1.0]])\n\nQ, R = np.linalg.qr(A)\nprint(Q)                         # orthonormal basis (columns)\nprint(np.allclose(Q.T @ Q, np.eye(2)))  # True: Q^T Q = I\n```\n\nQR is the numerically stable way to orthonormalize a basis -- prefer it over hand-rolled Gram-Schmidt, which can lose orthogonality due to rounding error.",
         resources:[
-          {name:"Strang 18.06 \u2014 Gram-Schmidt (Lec 17)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Gram-Schmidt (Lec 17)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-17-orthogonal-matrices-and-gram-schmidt/"},
         ],
         exs:[
           {q:"Apply Gram-Schmidt to $\\{\\mathbf{v}_1=(1,1,0)^T,\\mathbf{v}_2=(1,0,1)^T,\\mathbf{v}_3=(0,1,1)^T\\}$ to obtain an orthonormal basis.",ref:"Strang 18.06, PS5"},
@@ -352,7 +354,7 @@ const PLAN = [
         why:"Regression residuals live in $\\text{col}(A)^\\perp$ \u2014 understanding this is key to interpreting model fit.",
         py:"## Orthogonal Complements via Null Space\nThe orthogonal complement $U^\\perp$ of a subspace $U=\\text{span}(B)$ (columns of $B$) is exactly $\\text{null}(B^T)$.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\n\nB = np.array([[1.0],[1.0],[0.0]])  # U = span{(1,1,0)} in R^3\n\nU_perp = null_space(B.T)\nprint(U_perp)  # orthonormal basis for the orthogonal complement (a plane)\n\n# Sanity check: every column of U_perp is orthogonal to every column of B\nprint(np.allclose(B.T @ U_perp, 0))  # True\n```",
         resources:[
-          {name:"Strang 18.06 \u2014 Orthogonal Subspaces (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Orthogonal Subspaces (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-14-orthogonal-vectors-and-subspaces/"},
         ],
         exs:[
           {q:"Find the orthogonal complement of $V=\\text{span}\\{(1,1,0)^T,(0,1,1)^T\\}$ in $\\mathbb{R}^3$.",ref:"Original"},
@@ -378,8 +380,8 @@ const PLAN = [
         why:"THE most important section for ML: PCA, linear regression, and nearest-subspace classification are all orthogonal projections.",
         py:"## Orthogonal Projections\nProjecting $\\mathbf{x}$ onto the column space of $B$ uses the projection matrix $\\pi=B(B^TB)^{-1}B^T$ -- this *is* the least-squares formula behind linear regression (Ch 9).\n\n```python\nimport numpy as np\n\nB = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0]])  # basis for subspace U\nx = np.array([6.0, 0.0, 0.0])\n\n# Projection matrix\nP = B @ np.linalg.inv(B.T @ B) @ B.T\nproj_x = P @ x\nprint(proj_x)\n\n# Equivalent (and more stable) via lstsq\ncoeffs, *_ = np.linalg.lstsq(B, x, rcond=None)\nprint(B @ coeffs)\n```\n\nPrefer `np.linalg.lstsq` over forming $(B^TB)^{-1}$ explicitly -- it's the same idea but numerically more robust.",
         resources:[
-          {name:"Strang 18.06 \u2014 Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
-          {name:"Strang 18.06 \u2014 Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-15-projections-onto-subspaces/"},
+          {name:"Strang 18.06 \u2014 Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-16-projection-matrices-and-least-squares/"},
         ],
         exs:[
           {q:"Project $\\mathbf{b}=(1,1,1)^T$ onto $\\text{col}(A)$ for $A=\\begin{pmatrix}1&0\\\\0&1\\\\1&1\\end{pmatrix}$. Verify the residual $\\mathbf{e}=\\mathbf{b}-\\hat{\\mathbf{b}}$ is orthogonal to $\\text{col}(A)$.",ref:"Strang 18.06, PS5"},
@@ -412,7 +414,7 @@ const PLAN = [
         py:"## Determinant and Trace\n`np.linalg.det` and `np.trace` are direct one-liners -- but in practice you rarely need the determinant's *value*; its *sign* (orientation) and *zero-ness* (singularity) are what matter most.\n\n```python\nimport numpy as np\n\nA = np.array([[1.0, 2.0], [3.0, 4.0]])\n\nprint(np.linalg.det(A))   # -2.0\nprint(np.trace(A))        # 5.0 (sum of eigenvalues)\n\n# Singularity check -- safer than det == 0 for floats\nprint(np.isclose(np.linalg.det(A), 0))  # False\n```\n\nFor large matrices, never compute $\\det(A)$ to check invertibility -- it overflows/underflows. Use `np.linalg.matrix_rank` or `np.linalg.cond` instead.",
         resources:[
           {name:"3Blue1Brown \u2014 Determinant (geometric view)", url:"https://www.youtube.com/watch?v=Ip3X9LOh2dk"},
-          {name:"Paul's Notes \u2014 Determinants (practice)", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
+          {name:"Paul's Notes \u2014 Matrices & Determinants (review)", url:"https://tutorial.math.lamar.edu/classes/de/la_matrix.aspx"},
         ],
         exs:[
           {q:"Compute $\\det(A)$ for $A=\\begin{pmatrix}2&1&-1\\\\0&3&2\\\\-1&1&4\\end{pmatrix}$ by cofactor expansion.",ref:"Paul's Notes, LinAlg"},
@@ -426,7 +428,7 @@ const PLAN = [
         py:"## Eigenvalues and Eigenvectors\n`np.linalg.eig` returns eigenvalues and eigenvectors (columns of the second output) for any square matrix; for symmetric matrices, prefer `np.linalg.eigh` -- it's faster and numerically more stable, and guarantees real eigenvalues.\n\n```python\nimport numpy as np\n\nA = np.array([[2.0, 1.0], [1.0, 2.0]])\n\neigvals, eigvecs = np.linalg.eigh(A)  # symmetric -> use eigh\nprint(eigvals)   # [1. 3.]\nprint(eigvecs)   # columns are the eigenvectors\n\n# Verify A v = lambda v\nv = eigvecs[:, 0]\nprint(np.allclose(A @ v, eigvals[0] * v))  # True\n```",
         resources:[
           {name:"3Blue1Brown \u2014 Eigenvectors (essential)", url:"https://www.youtube.com/watch?v=PFDu9oVAE-g"},
-          {name:"Strang 18.06 \u2014 Eigenvalues (Lec 21)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Eigenvalues (Lec 21)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-21-eigenvalues-and-eigenvectors/"},
         ],
         exs:[
           {q:"Find all eigenvalues and eigenvectors of $A=\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}$. Are the eigenvectors orthogonal?",ref:"Strang 18.06, PS6"},
@@ -452,7 +454,7 @@ const PLAN = [
         why:"Diagonalisation simplifies matrix powers and exponents \u2014 used in Markov chains and differential equations.",
         py:"## Eigendecomposition and Diagonalization\nA diagonalizable matrix can be written $A=PDP^{-1}$ where $D$ is diagonal of eigenvalues and $P$'s columns are eigenvectors -- this is exactly what `np.linalg.eig` returns.\n\n```python\nimport numpy as np\n\nA = np.array([[2.0, 0.0], [1.0, 3.0]])\n\neigvals, P = np.linalg.eig(A)\nD = np.diag(eigvals)\n\nprint(np.allclose(P @ D @ np.linalg.inv(P), A))  # True\n\n# Fast matrix powers via diagonalization: A^10\nA10 = P @ np.diag(eigvals**10) @ np.linalg.inv(P)\nprint(A10)\n```\n\nDiagonalization makes computing $A^n$ for large $n$ cheap -- raise the eigenvalues to the $n$-th power instead of repeated matrix multiplication.",
         resources:[
-          {name:"Strang 18.06 \u2014 Diagonalisation (Lec 22)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Diagonalisation (Lec 22)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-22-diagonalization-and-powers-of-a/"},
         ],
         exs:[
           {q:"Diagonalise $A=\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}$: find $P$ and $D$ such that $A=PDP^{-1}$.",ref:"Strang 18.06, PS6"},
@@ -465,7 +467,7 @@ const PLAN = [
         why:"THE most important factorisation in ML: PCA, recommender systems, LSA, low-rank approximation all use SVD.",
         py:"## Singular Value Decomposition\n`np.linalg.svd` factors *any* matrix (square or not) as $A=U\\Sigma V^T$ -- the single most important decomposition in this book, underlying PCA (Ch 10) and low-rank approximation.\n\n```python\nimport numpy as np\n\nA = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])  # 3x2, not square\n\nU, S, Vt = np.linalg.svd(A, full_matrices=False)\nprint(S)  # singular values, descending\n\n# Reconstruct A\nprint(np.allclose(U @ np.diag(S) @ Vt, A))  # True\n```\n\nFor symmetric PSD matrices, the singular values equal the eigenvalues, and SVD reduces to eigendecomposition -- but SVD works for *every* matrix, which is why it's preferred in numerical linear algebra.",
         resources:[
-          {name:"Strang 18.06 \u2014 SVD (Lec 29)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 SVD (Lec 29)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-29-singular-value-decomposition/"},
           {name:"Visual Kernel \u2014 SVD Visualized", url:"https://www.youtube.com/watch?v=vSczTbgc8Rc"},
         ],
         exs:[
@@ -498,8 +500,8 @@ const PLAN = [
         why:"Chain rule $\\Rightarrow$ backprop. Product rule $\\Rightarrow$ gradient of composite losses. All gradient-based ML builds from here.",
         py:"## Symbolic and Numerical Differentiation\n`sympy` computes derivatives symbolically (exact, closed-form), while finite differences (or `scipy.misc.derivative`-style approaches) approximate them numerically -- useful for sanity-checking gradients.\n\n```python\nimport sympy as sp\n\nx = sp.symbols('x')\nf = sp.exp(x) * sp.sin(x)\n\ndf = sp.diff(f, x)\nprint(df)               # exp(x)*sin(x) + exp(x)*cos(x)\nprint(df.subs(x, 0))    # value at x=0\n\n# Numerical check via central difference\nimport numpy as np\nf_num = sp.lambdify(x, f, 'numpy')\nh = 1e-6\nx0 = 0.0\napprox = (f_num(x0+h) - f_num(x0-h)) / (2*h)\nprint(approx)  # ~1.0, matches df at x=0\n```",
         resources:[
-          {name:"Paul's Notes \u2014 Differentiation rules (practice)", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
-          {name:"Khan Academy \u2014 Derivatives", url:"https://www.khanacademy.org/math/differential-calculus"},
+          {name:"Paul's Notes \u2014 Differentiation Formulas (practice)", url:"https://tutorial.math.lamar.edu/problems/calci/diffformulas.aspx"},
+          {name:"Khan Academy \u2014 Derivative as a concept", url:"https://www.khanacademy.org/math/ap-calculus-ab/ab-differentiation-1-new/ab-2-1/v/derivative-as-a-concept"},
         ],
         exs:[
           {q:"Differentiate: (a) $f(x)=x^3\\ln x$, (b) $g(x)=\\sin(x^2)e^x$, (c) $\\sigma(x)=\\frac{1}{1+e^{-x}}$ (sigmoid). Show full working.",ref:"Paul's Notes, CalcI"},
@@ -512,8 +514,8 @@ const PLAN = [
         why:"$\\nabla f$ points in the direction of steepest ascent. Gradient descent moves against $\\nabla f$ to minimise the loss.",
         py:"## Gradients with Autodiff\nFor $f:\\mathbb{R}^n\\to\\mathbb{R}$, the gradient $\\nabla f$ is a vector of partial derivatives. Hand-coding these is error-prone -- `autograd` or `jax` compute exact gradients automatically.\n\n```python\nimport jax.numpy as jnp\nfrom jax import grad\n\ndef f(x):\n    return x[0]**2 * x[1] + jnp.sin(x[1])\n\ngrad_f = grad(f)\nx = jnp.array([2.0, 1.0])\nprint(grad_f(x))  # [df/dx0, df/dx1] evaluated at x\n```\n\nThis is exactly the mechanism behind `loss.backward()` in PyTorch -- automatic differentiation, not symbolic or numerical differentiation.",
         resources:[
-          {name:"Paul's Notes \u2014 Partial Derivatives (practice)", url:"https://tutorial.math.lamar.edu/problems/calciii/calciii.aspx"},
-          {name:"Khan Academy \u2014 Partial derivatives", url:"https://www.khanacademy.org/math/multivariable-calculus"},
+          {name:"Paul's Notes \u2014 Partial Derivatives (practice)", url:"https://tutorial.math.lamar.edu/problems/calciii/partialderivatives.aspx"},
+          {name:"Khan Academy \u2014 Partial derivatives, introduction", url:"https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/partial-derivatives/v/partial-derivatives-introduction"},
         ],
         exs:[
           {q:"For $f(x,y)=x^2y+y^3-3xy$, compute $\\partial f/\\partial x$, $\\partial f/\\partial y$, and $\\nabla f$ at $(1,2)$.",ref:"Paul's Notes, CalcIII"},
@@ -526,8 +528,8 @@ const PLAN = [
         why:"The Jacobian generalises gradients to multi-output functions \u2014 essential for understanding signal flow between layers.",
         py:"## Jacobians of Vector-Valued Functions\nFor $f:\\mathbb{R}^n\\to\\mathbb{R}^m$, the Jacobian is an $m\\times n$ matrix of all partial derivatives -- `jax.jacobian` (or `torch.autograd.functional.jacobian`) computes it directly.\n\n```python\nimport jax.numpy as jnp\nfrom jax import jacobian\n\ndef f(x):\n    return jnp.array([x[0]**2 + x[1], x[0]*x[1], jnp.sin(x[0])])\n\nJ = jacobian(f)\nx = jnp.array([1.0, 2.0])\nprint(J(x))  # 3x2 Jacobian matrix\n```\n\nThe shape of the Jacobian is `(output_dim, input_dim)` -- a useful sanity check whenever you derive one by hand.",
         resources:[
-          {name:"Khan Academy \u2014 Jacobian matrix", url:"https://www.khanacademy.org/math/multivariable-calculus"},
-          {name:"Paul's Notes \u2014 Gradient & directional derivative", url:"https://tutorial.math.lamar.edu/problems/calciii/calciii.aspx"},
+          {name:"Khan Academy \u2014 The Jacobian matrix", url:"https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/jacobian/v/the-jacobian-matrix"},
+          {name:"Paul's Notes \u2014 Directional Derivatives (practice)", url:"https://tutorial.math.lamar.edu/problems/calciii/directionalderiv.aspx"},
         ],
         exs:[
           {q:"Compute the Jacobian of $\\mathbf{f}:\\mathbb{R}^2\\to\\mathbb{R}^2$, $\\mathbf{f}(x,y)=(x^2+y,\\ xy-x)^T$. Evaluate at $(1,2)$.",ref:"Original"},
@@ -580,7 +582,7 @@ const PLAN = [
         why:"The Hessian describes curvature \u2014 used in second-order optimisers (Newton's method, L-BFGS, natural gradient).",
         py:"## Higher-Order Derivatives: the Hessian\nThe Hessian (matrix of second partial derivatives) tells you about curvature -- it's central to Newton's method and to checking whether a critical point is a minimum, maximum, or saddle.\n\n```python\nimport jax.numpy as jnp\nfrom jax import hessian\n\ndef f(x):\n    return x[0]**2 + x[0]*x[1] + 3*x[1]**2\n\nH = hessian(f)\nx = jnp.array([1.0, 1.0])\nprint(H(x))  # [[2, 1], [1, 6]]\n\n# Eigenvalues > 0 everywhere -> f is convex (positive definite Hessian)\nprint(jnp.linalg.eigvalsh(H(x)))\n```",
         resources:[
-          {name:"Paul's Notes \u2014 Second Partial Derivatives", url:"https://tutorial.math.lamar.edu/problems/calciii/calciii.aspx"},
+          {name:"Paul's Notes \u2014 Higher Order Partial Derivatives (practice)", url:"https://tutorial.math.lamar.edu/problems/calciii/HighOrderPartialDerivs.aspx"},
         ],
         exs:[
           {q:"Compute the Hessian of $f(x,y,z)=x^2y+yz^2+xz$. Verify it is symmetric.",ref:"Paul's Notes, CalcIII"},
@@ -593,7 +595,7 @@ const PLAN = [
         why:"Taylor approximations justify gradient descent (1st order) and Newton's method (2nd order).",
         py:"## Taylor Series Approximation\nA first-order Taylor expansion $f(\\mathbf{x}_0+\\boldsymbol{\\delta})\\approx f(\\mathbf{x}_0)+\\nabla f(\\mathbf{x}_0)^T\\boldsymbol{\\delta}$ is the linear approximation that gradient descent implicitly relies on at each step.\n\n```python\nimport numpy as np\n\nf = lambda x: np.sin(x[0]) * x[1]\ngrad_f = lambda x: np.array([np.cos(x[0]) * x[1], np.sin(x[0])])\n\nx0 = np.array([0.0, 1.0])\ndelta = np.array([0.1, -0.05])\n\nexact = f(x0 + delta)\ntaylor1 = f(x0) + grad_f(x0) @ delta\nprint(exact, taylor1)  # close for small delta\n```\n\nThe smaller $\\|\\boldsymbol{\\delta}\\|$, the better the linear (first-order) approximation -- this is why gradient-descent step sizes need to be small.",
         resources:[
-          {name:"Paul's Notes \u2014 Taylor Series (practice)", url:"https://tutorial.math.lamar.edu/problems/calcii/calcii.aspx"},
+          {name:"Paul's Notes \u2014 Taylor Series (practice)", url:"https://tutorial.math.lamar.edu/problems/calcii/taylorseries.aspx"},
         ],
         exs:[
           {q:"Find the 2nd-order Taylor expansion of $f(x,y)=e^{x+y}$ around $(0,0)$. Evaluate the approximation error at $(0.1,0.1)$.",ref:"Paul's Notes, CalcII"},
@@ -627,7 +629,7 @@ const PLAN = [
         py:"## Discrete and Continuous Distributions\n`scipy.stats` provides PMFs/PDFs, CDFs, sampling, and moments for dozens of standard distributions -- no need to hand-code formulas for the binomial, Poisson, or uniform distributions.\n\n```python\nfrom scipy import stats\n\n# Discrete: Binomial(n=10, p=0.3)\nbinom = stats.binom(n=10, p=0.3)\nprint(binom.pmf(3))   # P(X=3)\nprint(binom.mean())   # E[X] = np\n\n# Continuous: Uniform on [0, 2]\nuni = stats.uniform(loc=0, scale=2)\nprint(uni.pdf(1.0))   # density at x=1\nprint(uni.cdf(1.0))   # P(X <= 1)\n```",
         resources:[
           {name:"Blitzstein & Hwang \u2014 Ch 4\u20135 (continuous RVs)", url:"https://stat110.hsites.harvard.edu/"},
-          {name:"Khan Academy \u2014 Probability distributions", url:"https://www.khanacademy.org/math/statistics-probability"},
+          {name:"Khan Academy \u2014 Constructing a probability distribution", url:"https://www.khanacademy.org/math/statistics-probability/random-variables-stats-library/random-variables-discrete/v/discrete-probability-distribution"},
         ],
         exs:[
           {q:"$X\\sim\\text{Poisson}(\\lambda=3)$. Find $P(X=2)$, $\\mathbb{E}[X]$, $\\text{Var}(X)$, and the CDF $P(X\\leq 2)$.",ref:"B&H \u00a74"},
@@ -655,7 +657,7 @@ const PLAN = [
         py:"## Mean, Variance, and Covariance\n`np.mean`, `np.var`, and `np.cov` compute the empirical analogues of $\\mathbb{E}[X]$, $\\mathbb{V}[X]$, and $\\text{Cov}[X,Y]$ -- the building blocks of every summary statistic in ML.\n\n```python\nimport numpy as np\n\nrng = np.random.default_rng(0)\nX = rng.normal(loc=2, scale=1, size=1000)\nY = 0.5 * X + rng.normal(scale=0.5, size=1000)\n\nprint(np.mean(X), np.var(X))      # ~2.0, ~1.0\n\ncov = np.cov(X, Y)                # 2x2 covariance matrix\nprint(cov)\n\n# Independence check via correlation\ncorr = np.corrcoef(X, Y)[0, 1]\nprint(corr)  # close to 0 only if X, Y uncorrelated\n```\n\nNote `np.cov` uses the unbiased (n-1) estimator by default -- pass `bias=True` to match the $1/n$ formula often used in derivations.",
         resources:[
           {name:"Blitzstein & Hwang \u2014 Ch 6 (expectation)", url:"https://stat110.hsites.harvard.edu/"},
-          {name:"Khan Academy \u2014 Expected value and variance", url:"https://www.khanacademy.org/math/statistics-probability"},
+          {name:"Khan Academy \u2014 Mean (expected value) of a discrete random variable", url:"https://www.khanacademy.org/math/ap-statistics/random-variables-ap/xfb5d8e68:mean-standard-deviation-random-variables/v/expected-value-of-a-discrete-random-variable"},
         ],
         exs:[
           {q:"Joint PMF: $P(0,0)=0.2$, $P(0,1)=0.3$, $P(1,0)=0.1$, $P(1,1)=0.4$. Find $\\mathbb{E}[X]$, $\\mathbb{E}[Y]$, $\\text{Cov}(X,Y)$, and test independence.",ref:"B&H \u00a76"},
@@ -715,7 +717,7 @@ const PLAN = [
         py:"## Gradient Descent from Scratch\nImplementing gradient descent directly makes the step-size/convergence trade-offs concrete -- exactly the trade-offs that optimizers like SGD and Adam manage automatically.\n\n```python\nimport numpy as np\n\nf = lambda x: x[0]**2 + 2*x[1]**2\ngrad_f = lambda x: np.array([2*x[0], 4*x[1]])\n\nx = np.array([3.0, 3.0])\nlr = 0.1\n\nfor i in range(50):\n    x = x - lr * grad_f(x)\n\nprint(x)         # converges toward [0, 0]\nprint(f(x))      # objective value -> 0\n```\n\nTry `lr = 0.6` -- the iterates start oscillating and diverging, illustrating exactly the step-size instability discussed in MML §7.1.",
         resources:[
           {name:"Karpathy \u2014 Neural net from scratch (includes GD)", url:"https://www.youtube.com/watch?v=VMj-3S1tku0"},
-          {name:"Paul's Notes \u2014 Finding Min/Max values", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
+          {name:"Paul's Notes \u2014 Minimum and Maximum Values (practice)", url:"https://tutorial.math.lamar.edu/problems/calci/minmaxvalues.aspx"},
         ],
         exs:[
           {q:"Run 5 steps of GD on $f(x)=x^2-4x+5$ with $x_0=0$ and $\\alpha=0.3$. Compare to the true minimum.",ref:"Original"},
@@ -728,8 +730,8 @@ const PLAN = [
         why:"SVMs use Lagrangian duality. PCA is constrained optimisation. Regularisation adds soft constraints.",
         py:"## Constrained Optimization with SciPy\n`scipy.optimize.minimize` solves constrained problems directly with the `constraints` argument -- no need to hand-derive the Lagrangian for routine problems (though doing so by hand builds the intuition SciPy uses internally).\n\n```python\nfrom scipy.optimize import minimize\nimport numpy as np\n\n# Minimize x^2 + y^2 subject to x + y = 1\nf = lambda v: v[0]**2 + v[1]**2\ncons = {'type': 'eq', 'fun': lambda v: v[0] + v[1] - 1}\n\nresult = minimize(f, x0=[0, 0], constraints=[cons])\nprint(result.x)  # [0.5, 0.5]\n\n# result.x satisfies the KKT/Lagrange conditions at convergence\n```\n\nInternally, SciPy's SLSQP solver works with a Lagrangian and KKT conditions -- exactly the theory in MML §7.2, just automated.",
         resources:[
-          {name:"Paul's Notes \u2014 Lagrange Multipliers (practice)", url:"https://tutorial.math.lamar.edu/problems/calciii/calciii.aspx"},
-          {name:"Khan Academy \u2014 Lagrange multipliers", url:"https://www.khanacademy.org/math/multivariable-calculus"},
+          {name:"Paul's Notes \u2014 Lagrange Multipliers (practice)", url:"https://tutorial.math.lamar.edu/problems/calciii/lagrangemultipliers.aspx"},
+          {name:"Khan Academy \u2014 The Lagrangian", url:"https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives/lagrange-multipliers-and-constrained-optimization/v/the-lagrangian"},
         ],
         exs:[
           {q:"Minimise $f(x,y)=x^2+y^2$ subject to $x+y=1$ using Lagrange multipliers. Verify it is a minimum.",ref:"Paul's Notes, CalcIII"},
@@ -743,7 +745,7 @@ const PLAN = [
         py:"## Convex Optimization\nFor problems known to be convex (e.g. SVMs, Ch 12), `cvxpy` lets you state the objective and constraints declaratively and guarantees the global optimum.\n\n```python\nimport cvxpy as cp\nimport numpy as np\n\nx = cp.Variable(2)\nA = np.array([[1, 0], [0, 2]])\n\nobjective = cp.Minimize(cp.quad_form(x, A))\nconstraints = [x[0] + x[1] >= 1]\n\nproblem = cp.Problem(objective, constraints)\nproblem.solve()\n\nprint(x.value, problem.value)\n```\n\nBecause the problem is convex, `cvxpy`'s solution is *guaranteed* globally optimal -- unlike generic gradient descent, which can only promise a local optimum for non-convex objectives.",
         resources:[
           {name:"Boyd & Vandenberghe \u2014 Ch 1\u20133 (free classic textbook)", url:"https://web.stanford.edu/~boyd/cvxbook/"},
-          {name:"Paul's Notes \u2014 Concavity and convexity", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
+          {name:"Paul's Notes \u2014 Shape of a Graph: Concavity (practice)", url:"https://tutorial.math.lamar.edu/problems/calci/shapeofgraphptii.aspx"},
         ],
         exs:[
           {q:"Is $f(x)=x^4-4x^2+3$ convex? Check $f''(x)\\geq 0$ everywhere. Where does convexity fail?",ref:"Paul's Notes, CalcI"},
@@ -830,7 +832,7 @@ const PLAN = [
         py:"## Model Selection and Cross-Validation\n$k$-fold cross-validation estimates generalization error without touching the test set -- `sklearn.model_selection.cross_val_score` is the standard tool for the model-comparison procedure this section describes.\n\n```python\nimport numpy as np\nfrom sklearn.linear_model import Ridge\nfrom sklearn.model_selection import cross_val_score\n\nX = np.random.randn(200, 5)\ny = X @ np.array([1,-2,0,3,0]) + np.random.randn(200) * 0.5\n\nfor alpha in [0.01, 1.0, 100.0]:\n    model = Ridge(alpha=alpha)\n    scores = cross_val_score(model, X, y, cv=5, scoring='r2')\n    print(alpha, scores.mean())\n```\n\nPicking the $\\alpha$ with the best *cross-validated* score (not training score) is exactly how MML §8.6 frames model selection as choosing among a family of models.",
         resources:[
           {name:"MML book \u00a78.6", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Khan Academy \u2014 Bias-variance tradeoff", url:"https://www.khanacademy.org/math/statistics-probability"},
+          {name:"StatQuest \u2014 Machine Learning Fundamentals: Bias and Variance", url:"https://www.youtube.com/watch?v=EuBBz3bI-aA"},
         ],
         exs:[
           {q:"Explain $k$-fold cross-validation: how is the dataset partitioned, and how is the final performance estimate computed? Why is it more reliable than a single train/test split for small datasets?",ref:"MML \u00a78.6"},
@@ -863,7 +865,7 @@ const PLAN = [
         py:"## Maximum Likelihood and Ridge Regression\nThe MLE for linear regression is ordinary least squares; adding a Gaussian prior on $\\boldsymbol{\\theta}$ gives MAP estimation, which is exactly ridge regression.\n\n```python\nimport numpy as np\nfrom sklearn.linear_model import LinearRegression, Ridge\n\nx = np.linspace(0, 10, 50).reshape(-1, 1)\ny = 2 * x.ravel() + 1 + np.random.randn(50) * 0.5\n\n# MLE = ordinary least squares\nols = LinearRegression().fit(x, y)\nprint(ols.coef_, ols.intercept_)\n\n# MAP with Gaussian prior = ridge regression\nridge = Ridge(alpha=1.0).fit(x, y)\nprint(ridge.coef_, ridge.intercept_)\n\n# Closed-form MLE: theta = (Phi^T Phi)^-1 Phi^T y\nPhi = np.column_stack([np.ones_like(x.ravel()), x.ravel()])\ntheta = np.linalg.inv(Phi.T @ Phi) @ Phi.T @ y\nprint(theta)\n```",
         resources:[
           {name:"MML book §9.2", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Strang 18.06 — Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 — Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-16-projection-matrices-and-least-squares/"},
         ],
         exs:[
           {q:"Starting from the negative log-likelihood $-\\log p(\\mathbf{y}|X,\\boldsymbol{\\theta})=\\frac{1}{2\\sigma^2}\\|\\mathbf{y}-X\\boldsymbol{\\theta}\\|^2+\\text{const}$, derive the normal equations $X^TX\\hat{\\boldsymbol{\\theta}}=X^T\\mathbf{y}$ by setting the gradient to zero.",ref:"MML §9.2"},
@@ -891,7 +893,7 @@ const PLAN = [
         py:"## Maximum Likelihood as Orthogonal Projection\nGeometrically, OLS finds $\\hat{\\mathbf{y}}=\\Phi\\hat{\\boldsymbol{\\theta}}$ as the *orthogonal projection* of $\\mathbf{y}$ onto the column space of $\\Phi$ -- the same projection formula from §3.8.\n\n```python\nimport numpy as np\n\nx = np.linspace(0, 10, 50)\ny = 2 * x + 1 + np.random.randn(50) * 0.5\nPhi = np.column_stack([np.ones_like(x), x])\n\n# Projection onto col(Phi)\nP = Phi @ np.linalg.inv(Phi.T @ Phi) @ Phi.T\ny_hat = P @ y\n\n# Residual is orthogonal to col(Phi)\nresidual = y - y_hat\nprint(np.allclose(Phi.T @ residual, 0, atol=1e-8))  # True\n```\n\nThe fact that the residual is orthogonal to every column of $\\Phi$ is precisely the normal-equations condition $\\Phi^T(\\mathbf{y}-\\Phi\\hat{\\boldsymbol{\\theta}})=\\mathbf{0}$.",
         resources:[
           {name:"MML book §9.4", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Strang 18.06 — Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 — Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-15-projections-onto-subspaces/"},
         ],
         exs:[
           {q:"Show that $\\hat{\\mathbf{y}}=X(X^TX)^{-1}X^T\\mathbf{y}=P\\mathbf{y}$ where $P$ is the projection matrix from §3.8. Why does this mean $\\hat{\\mathbf{y}}\\in\\text{col}(X)$?",ref:"MML §9.4"},
@@ -925,7 +927,7 @@ const PLAN = [
         py:"## Maximum Variance via Eigendecomposition\nThe directions of maximum variance are the eigenvectors of the data covariance matrix, ordered by eigenvalue -- this is PCA's defining computation, before any library wrapper.\n\n```python\nimport numpy as np\n\nX = np.random.randn(200, 3) @ np.array([[3,1,0],[1,2,0],[0,0,0.1]])\nX = X - X.mean(axis=0)  # center\n\nS = np.cov(X.T)                       # covariance matrix\neigvals, eigvecs = np.linalg.eigh(S)  # ascending order\n\n# Sort descending: top eigenvector = direction of max variance\norder = np.argsort(eigvals)[::-1]\nprint(eigvals[order])\nprint(eigvecs[:, order[0]])  # first principal component direction\n```",
         resources:[
           {name:"MML book §10.2", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Strang 18.06 — Symmetric Matrices (Lec 25)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 — Symmetric Matrices (Lec 25)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-25-symmetric-matrices-and-positive-definiteness/"},
         ],
         exs:[
           {q:"For a unit vector $\\mathbf{b}_1$ ($\\|\\mathbf{b}_1\\|=1$), the variance of the projected data is $V_1=\\mathbf{b}_1^TS\\mathbf{b}_1$. Set up the constrained optimisation $\\max_{\\mathbf{b}_1} \\mathbf{b}_1^TS\\mathbf{b}_1$ s.t. $\\|\\mathbf{b}_1\\|^2=1$ using a Lagrange multiplier (recall §7.2).",ref:"MML §10.2"},
