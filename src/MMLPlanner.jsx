@@ -169,7 +169,7 @@ const PLAN = [
         why:"Every ML model reduces to $A\\mathbf{x}=\\mathbf{b}$ \u2014 regression, constrained optimisation, neural net forward pass.",
         py:"## Solving with NumPy\nFor small dense systems, use `np.linalg.solve`, which is more efficient and numerically stable than computing $A^{-1}$ explicitly.\n\n```python\nimport numpy as np\n\nA = np.array([[2,1,-1],[-3,-1,2],[-2,1,2]])\nb = np.array([8,-11,-3])\n\nx = np.linalg.solve(A, b)\nprint(x)  # [2. 3. -1.]\n```\n\nAvoid `np.linalg.inv(A) @ b` -- it's slower and less numerically stable for larger systems.",
         resources:[
-          {name:"Strang 18.06 \u2014 Elimination (Lec 2)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Elimination (Lec 2)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
           {name:"Paul's Notes \u2014 Linear Systems", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
         ],
         exs:[
@@ -197,7 +197,7 @@ const PLAN = [
         why:"Gaussian elimination underpins matrix inverses, least-squares, and numerical linear algebra.",
         py:"## Row Reduction and the General Solution\nNumPy has no built-in RREF (it favors direct solves), but `sympy` reproduces the by-hand elimination from this section, and `scipy.linalg.null_space` gives a basis for the homogeneous solution space.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\nimport sympy as sp\n\nA = sp.Matrix([[1,2,-1],[2,4,1],[0,1,3]])\nrref, pivots = A.rref()\nprint(rref)        # row-reduced echelon form\nprint(pivots)      # pivot columns\n\n# Null space (homogeneous solutions) for a non-square A\nA2 = np.array([[1,2,0,-1],[1,2,1,0],[2,4,1,-1]])\nprint(null_space(A2))\n```",
         resources:[
-          {name:"Strang 18.06 \u2014 Elimination continued (Lec 3)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Elimination continued (Lec 3)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
           {name:"Paul's Notes \u2014 RREF", url:"https://tutorial.math.lamar.edu/problems/calci/calci.aspx"},
         ],
         exs:[
@@ -211,7 +211,7 @@ const PLAN = [
         why:"ML embedding spaces are vector spaces; understanding closure shapes how we design features and measure similarity.",
         py:"## Checking Subspace Membership Numerically\nThere's no single function that \"checks\" a subspace, but you can test whether a vector lies in $\\text{span}\\{\\mathbf{v}_1,\\dots,\\mathbf{v}_k\\}$ by solving a least-squares problem and checking the residual.\n\n```python\nimport numpy as np\n\nV = np.array([[1,0],[0,1],[1,1]]).T  # columns span a subspace of R^3\nx = np.array([2,3,5])\n\nc, *_ = np.linalg.lstsq(V, x, rcond=None)\nin_span = np.allclose(V @ c, x)\nprint(in_span)  # True: x = 2*v1 + 3*v2\n```",
         resources:[
-          {name:"Strang 18.06 \u2014 Vector Spaces (Lec 5)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Vector Spaces (Lec 5)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
           {name:"Axler LADR \u2014 Chapter 1 (free PDF)", url:"https://linear.axler.net/"},
         ],
         exs:[
@@ -225,7 +225,7 @@ const PLAN = [
         why:"Redundant features are linearly dependent \u2014 detecting this prevents degenerate models and informs feature selection.",
         py:"## Testing Independence with Rank\nA set of vectors is linearly independent iff the matrix formed by stacking them as columns has full column rank -- check with `np.linalg.matrix_rank`.\n\n```python\nimport numpy as np\n\nV = np.array([[1,4,7],[2,5,8],[3,6,9]]).T  # v1, v2, v3 as columns\n\nrank = np.linalg.matrix_rank(V)\nprint(rank, V.shape[1])  # 2 3 -> dependent (rank < #vectors)\n```\n\n`matrix_rank` is more numerically robust than computing a determinant, especially for non-square or near-singular matrices.",
         resources:[
-          {name:"Strang 18.06 \u2014 Independence (Lec 7)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Independence (Lec 7)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
           {name:"Khan Academy \u2014 Linear independence", url:"https://www.khanacademy.org/math/linear-algebra"},
         ],
         exs:[
@@ -239,8 +239,8 @@ const PLAN = [
         why:"The rank of a data matrix equals its true dimensionality \u2014 the foundation of PCA and dimensionality reduction.",
         py:"## Rank, Column Space, and Null Space\n`np.linalg.matrix_rank` gives $\\text{rank}(A)$ directly, while `scipy.linalg.null_space` returns an orthonormal basis for $\\text{null}(A)$ -- together they let you verify the rank-nullity theorem numerically.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\n\nA = np.array([[1,2,3],[2,4,6],[1,3,4]])\n\nr = np.linalg.matrix_rank(A)\nns = null_space(A)\nprint(r, ns.shape[1], A.shape[1])  # rank + nullity == n columns\n```\n\nFor a basis of the column space, use a QR decomposition (`np.linalg.qr(A)`) or take the pivot columns from `sympy`'s `.rref()`.",
         resources:[
-          {name:"Strang 18.06 \u2014 Basis & Dimension (Lec 9)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
-          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Basis & Dimension (Lec 9)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Find a basis for the column space and null space of $A=\\begin{pmatrix}1&2&3\\\\2&4&6\\\\1&3&4\\end{pmatrix}$. State $\\text{rank}(A)$ and verify the rank-nullity theorem.",ref:"Strang 18.06, PS3"},
@@ -254,7 +254,7 @@ const PLAN = [
         py:"## Kernel, Image, and Change of Basis\nThe kernel and image of a linear map $T$ come straight from its matrix: `null_space` for $\\ker(T)$, `matrix_rank` for $\\dim(\\text{Im}(T))$. A change-of-basis matrix is just the matrix whose columns are the new basis vectors.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\n\nT = np.array([[1,1],[2,-1],[1,0]])  # R^2 -> R^3\n\nker = null_space(T)                  # basis for ker(T)\nrank = np.linalg.matrix_rank(T)      # dim(Im(T))\nprint(ker.shape[1], rank, T.shape[1])  # rank-nullity: 0 + 2 = 2\n\n# Express x = (3,1) in basis B' = {(1,1), (1,-1)}\nBprime = np.array([[1,1],[1,-1]]).T\nx = np.array([3,1])\ncoords = np.linalg.solve(Bprime, x)\nprint(coords)  # [2. 1.]\n```",
         resources:[
           {name:"3Blue1Brown \u2014 Linear Transformations (essential)", url:"https://www.youtube.com/watch?v=kYB8IZa5AuE"},
-          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Four Fundamental Subspaces (Lec 10)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"For $T:\\mathbb{R}^2\\to\\mathbb{R}^3$, $T(x_1,x_2)=(x_1+x_2,\\ 2x_1-x_2,\\ x_1)$, write the transformation matrix, find $\\ker(T)$ and $\\text{Im}(T)$, and verify rank-nullity.",ref:"Original"},
@@ -299,7 +299,7 @@ const PLAN = [
         why:"Dot products measure similarity. Attention in transformers computes $\\mathbf{q}^T\\mathbf{k}/\\sqrt{d}$ \u2014 a scaled inner product.",
         py:"## Inner Products and the Gram Matrix\nThe standard dot product is `np.dot` or `@`. For a *generalized* inner product $\\langle\\mathbf{x},\\mathbf{y}\\rangle=\\mathbf{x}^TA\\mathbf{y}$ with symmetric positive-definite $A$, just sandwich $A$ in between.\n\n```python\nimport numpy as np\n\nx = np.array([1.0, 2.0])\ny = np.array([3.0, -1.0])\n\nprint(np.dot(x, y))          # standard inner product: 1.0\n\nA = np.array([[2,0],[0,1]])  # SPD matrix defines a new inner product\nprint(x @ A @ y)             # generalized inner product: 4.0\n```\n\nA matrix of pairwise inner products $\\langle\\mathbf{x}_i,\\mathbf{x}_j\\rangle$ is a **Gram matrix** -- compute it for a data matrix $X$ (rows = samples) with `X @ X.T`.",
         resources:[
-          {name:"Strang 18.06 \u2014 Orthogonality (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Orthogonality (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
           {name:"Khan Academy \u2014 Dot product", url:"https://www.khanacademy.org/math/linear-algebra"},
         ],
         exs:[
@@ -339,7 +339,7 @@ const PLAN = [
         why:"ONBs simplify computations dramatically. QR decomposition produces a numerically stable ONB.",
         py:"## Building an Orthonormal Basis\n`np.linalg.qr` performs Gram-Schmidt under the hood: the columns of $Q$ form an orthonormal basis for the column space of $A$.\n\n```python\nimport numpy as np\n\nA = np.array([[1.0, 1.0], [1.0, 0.0], [0.0, 1.0]])\n\nQ, R = np.linalg.qr(A)\nprint(Q)                         # orthonormal basis (columns)\nprint(np.allclose(Q.T @ Q, np.eye(2)))  # True: Q^T Q = I\n```\n\nQR is the numerically stable way to orthonormalize a basis -- prefer it over hand-rolled Gram-Schmidt, which can lose orthogonality due to rounding error.",
         resources:[
-          {name:"Strang 18.06 \u2014 Gram-Schmidt (Lec 17)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Gram-Schmidt (Lec 17)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Apply Gram-Schmidt to $\\{\\mathbf{v}_1=(1,1,0)^T,\\mathbf{v}_2=(1,0,1)^T,\\mathbf{v}_3=(0,1,1)^T\\}$ to obtain an orthonormal basis.",ref:"Strang 18.06, PS5"},
@@ -352,7 +352,7 @@ const PLAN = [
         why:"Regression residuals live in $\\text{col}(A)^\\perp$ \u2014 understanding this is key to interpreting model fit.",
         py:"## Orthogonal Complements via Null Space\nThe orthogonal complement $U^\\perp$ of a subspace $U=\\text{span}(B)$ (columns of $B$) is exactly $\\text{null}(B^T)$.\n\n```python\nimport numpy as np\nfrom scipy.linalg import null_space\n\nB = np.array([[1.0],[1.0],[0.0]])  # U = span{(1,1,0)} in R^3\n\nU_perp = null_space(B.T)\nprint(U_perp)  # orthonormal basis for the orthogonal complement (a plane)\n\n# Sanity check: every column of U_perp is orthogonal to every column of B\nprint(np.allclose(B.T @ U_perp, 0))  # True\n```",
         resources:[
-          {name:"Strang 18.06 \u2014 Orthogonal Subspaces (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Orthogonal Subspaces (Lec 14)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Find the orthogonal complement of $V=\\text{span}\\{(1,1,0)^T,(0,1,1)^T\\}$ in $\\mathbb{R}^3$.",ref:"Original"},
@@ -378,8 +378,8 @@ const PLAN = [
         why:"THE most important section for ML: PCA, linear regression, and nearest-subspace classification are all orthogonal projections.",
         py:"## Orthogonal Projections\nProjecting $\\mathbf{x}$ onto the column space of $B$ uses the projection matrix $\\pi=B(B^TB)^{-1}B^T$ -- this *is* the least-squares formula behind linear regression (Ch 9).\n\n```python\nimport numpy as np\n\nB = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0]])  # basis for subspace U\nx = np.array([6.0, 0.0, 0.0])\n\n# Projection matrix\nP = B @ np.linalg.inv(B.T @ B) @ B.T\nproj_x = P @ x\nprint(proj_x)\n\n# Equivalent (and more stable) via lstsq\ncoeffs, *_ = np.linalg.lstsq(B, x, rcond=None)\nprint(B @ coeffs)\n```\n\nPrefer `np.linalg.lstsq` over forming $(B^TB)^{-1}$ explicitly -- it's the same idea but numerically more robust.",
         resources:[
-          {name:"Strang 18.06 \u2014 Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
-          {name:"Strang 18.06 \u2014 Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Project $\\mathbf{b}=(1,1,1)^T$ onto $\\text{col}(A)$ for $A=\\begin{pmatrix}1&0\\\\0&1\\\\1&1\\end{pmatrix}$. Verify the residual $\\mathbf{e}=\\mathbf{b}-\\hat{\\mathbf{b}}$ is orthogonal to $\\text{col}(A)$.",ref:"Strang 18.06, PS5"},
@@ -426,7 +426,7 @@ const PLAN = [
         py:"## Eigenvalues and Eigenvectors\n`np.linalg.eig` returns eigenvalues and eigenvectors (columns of the second output) for any square matrix; for symmetric matrices, prefer `np.linalg.eigh` -- it's faster and numerically more stable, and guarantees real eigenvalues.\n\n```python\nimport numpy as np\n\nA = np.array([[2.0, 1.0], [1.0, 2.0]])\n\neigvals, eigvecs = np.linalg.eigh(A)  # symmetric -> use eigh\nprint(eigvals)   # [1. 3.]\nprint(eigvecs)   # columns are the eigenvectors\n\n# Verify A v = lambda v\nv = eigvecs[:, 0]\nprint(np.allclose(A @ v, eigvals[0] * v))  # True\n```",
         resources:[
           {name:"3Blue1Brown \u2014 Eigenvectors (essential)", url:"https://www.youtube.com/watch?v=PFDu9oVAE-g"},
-          {name:"Strang 18.06 \u2014 Eigenvalues (Lec 21)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Eigenvalues (Lec 21)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Find all eigenvalues and eigenvectors of $A=\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}$. Are the eigenvectors orthogonal?",ref:"Strang 18.06, PS6"},
@@ -452,7 +452,7 @@ const PLAN = [
         why:"Diagonalisation simplifies matrix powers and exponents \u2014 used in Markov chains and differential equations.",
         py:"## Eigendecomposition and Diagonalization\nA diagonalizable matrix can be written $A=PDP^{-1}$ where $D$ is diagonal of eigenvalues and $P$'s columns are eigenvectors -- this is exactly what `np.linalg.eig` returns.\n\n```python\nimport numpy as np\n\nA = np.array([[2.0, 0.0], [1.0, 3.0]])\n\neigvals, P = np.linalg.eig(A)\nD = np.diag(eigvals)\n\nprint(np.allclose(P @ D @ np.linalg.inv(P), A))  # True\n\n# Fast matrix powers via diagonalization: A^10\nA10 = P @ np.diag(eigvals**10) @ np.linalg.inv(P)\nprint(A10)\n```\n\nDiagonalization makes computing $A^n$ for large $n$ cheap -- raise the eigenvalues to the $n$-th power instead of repeated matrix multiplication.",
         resources:[
-          {name:"Strang 18.06 \u2014 Diagonalisation (Lec 22)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 \u2014 Diagonalisation (Lec 22)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Diagonalise $A=\\begin{pmatrix}3&1\\\\1&3\\end{pmatrix}$: find $P$ and $D$ such that $A=PDP^{-1}$.",ref:"Strang 18.06, PS6"},
@@ -465,8 +465,8 @@ const PLAN = [
         why:"THE most important factorisation in ML: PCA, recommender systems, LSA, low-rank approximation all use SVD.",
         py:"## Singular Value Decomposition\n`np.linalg.svd` factors *any* matrix (square or not) as $A=U\\Sigma V^T$ -- the single most important decomposition in this book, underlying PCA (Ch 10) and low-rank approximation.\n\n```python\nimport numpy as np\n\nA = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])  # 3x2, not square\n\nU, S, Vt = np.linalg.svd(A, full_matrices=False)\nprint(S)  # singular values, descending\n\n# Reconstruct A\nprint(np.allclose(U @ np.diag(S) @ Vt, A))  # True\n```\n\nFor symmetric PSD matrices, the singular values equal the eigenvalues, and SVD reduces to eigendecomposition -- but SVD works for *every* matrix, which is why it's preferred in numerical linear algebra.",
         resources:[
-          {name:"Strang 18.06 \u2014 SVD (Lec 29)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
-          {name:"3Blue1Brown \u2014 SVD visual", url:"https://www.youtube.com/watch?v=vSczTbgc8Rc"},
+          {name:"Strang 18.06 \u2014 SVD (Lec 29)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
+          {name:"Visual Kernel \u2014 SVD Visualized", url:"https://www.youtube.com/watch?v=vSczTbgc8Rc"},
         ],
         exs:[
           {q:"Compute the SVD of $A=\\begin{pmatrix}1&1\\\\0&1\\\\1&0\\end{pmatrix}$ by: (1) eigendecomposing $A^TA$, (2) computing $V$, $\\Sigma$, then $U=AV\\Sigma^{-1}$.",ref:"Strang 18.06, PS9"},
@@ -612,8 +612,8 @@ const PLAN = [
         why:"The rigorous foundation of probability. Every probabilistic ML model \u2014 Bayesian or frequentist \u2014 rests on this.",
         py:"## Sample Spaces and Random Variables\n`numpy.random` (or the newer `Generator` API) simulates draws from a sample space -- a great way to build intuition for abstract probability-space definitions before the formal measure-theoretic machinery.\n\n```python\nimport numpy as np\n\nrng = np.random.default_rng(seed=0)\n\n# Sample space {1,...,6} for a die roll, X = outcome\nrolls = rng.integers(1, 7, size=10000)\n\n# Empirical probability of event A = {roll is even}\np_even = np.mean(rolls % 2 == 0)\nprint(p_even)  # ~0.5\n```\n\nEmpirical frequencies converging to theoretical probabilities (the law of large numbers) is the bridge between the formal axioms and how we *use* probability in practice.",
         resources:[
-          {name:"Blitzstein & Hwang \u2014 Ch 1 (free book)", url:"https://projects.iq.harvard.edu/stat110/home"},
-          {name:"Stat 110 Lecture 1 (YouTube)", url:"https://www.youtube.com/watch?v=KbB0FoaE9D4"},
+          {name:"Blitzstein & Hwang \u2014 Ch 1 (free book)", url:"https://stat110.hsites.harvard.edu/"},
+          {name:"Stat 110 Lecture 1 (YouTube)", url:"https://www.youtube.com/watch?v=KbB0FjPg0mw"},
         ],
         exs:[
           {q:"A fair die is rolled. Define $\\Omega$, give a concrete event $A$, construct a $\\sigma$-algebra containing $A$, and define $P(A)$.",ref:"MML \u00a76.1"},
@@ -626,7 +626,7 @@ const PLAN = [
         why:"PMFs and PDFs are the building blocks of every generative model and likelihood function in ML.",
         py:"## Discrete and Continuous Distributions\n`scipy.stats` provides PMFs/PDFs, CDFs, sampling, and moments for dozens of standard distributions -- no need to hand-code formulas for the binomial, Poisson, or uniform distributions.\n\n```python\nfrom scipy import stats\n\n# Discrete: Binomial(n=10, p=0.3)\nbinom = stats.binom(n=10, p=0.3)\nprint(binom.pmf(3))   # P(X=3)\nprint(binom.mean())   # E[X] = np\n\n# Continuous: Uniform on [0, 2]\nuni = stats.uniform(loc=0, scale=2)\nprint(uni.pdf(1.0))   # density at x=1\nprint(uni.cdf(1.0))   # P(X <= 1)\n```",
         resources:[
-          {name:"Blitzstein & Hwang \u2014 Ch 4\u20135 (continuous RVs)", url:"https://projects.iq.harvard.edu/stat110/home"},
+          {name:"Blitzstein & Hwang \u2014 Ch 4\u20135 (continuous RVs)", url:"https://stat110.hsites.harvard.edu/"},
           {name:"Khan Academy \u2014 Probability distributions", url:"https://www.khanacademy.org/math/statistics-probability"},
         ],
         exs:[
@@ -641,7 +641,7 @@ const PLAN = [
         py:"## Sum Rule, Product Rule, and Bayes' Theorem\nBayes' theorem $p(x|y)=\\frac{p(y|x)p(x)}{p(y)}$ can be implemented directly on a joint probability table -- a useful way to build intuition before moving to continuous densities.\n\n```python\nimport numpy as np\n\n# Joint table p(x, y) for x in {0,1}, y in {0,1}\njoint = np.array([[0.3, 0.1],\n                   [0.2, 0.4]])  # rows = x, cols = y\n\np_x = joint.sum(axis=1)          # sum rule: marginal p(x)\np_y = joint.sum(axis=0)          # marginal p(y)\n\np_y_given_x = joint / p_x[:, None]  # product rule: p(y|x)\n\n# Bayes: p(x|y) = p(y|x) p(x) / p(y)\np_x_given_y = (p_y_given_x * p_x[:, None]) / p_y[None, :]\nprint(p_x_given_y)\n```",
         resources:[
           {name:"3Blue1Brown \u2014 Bayes' theorem (visual)", url:"https://www.youtube.com/watch?v=HZGCoVF3YvM"},
-          {name:"Stat 110 Lec 3 (Bayes)", url:"https://www.youtube.com/watch?v=kx_5aEBwnLk"},
+          {name:"Stat 110 Lec 4 (Bayes)", url:"https://www.youtube.com/watch?v=P7NE4WF8j-Q"},
         ],
         exs:[
           {q:"A test is 99\\% sensitive ($P(+|D)=0.99$) and 95\\% specific ($P(-|D^c)=0.95$). Disease prevalence is 1\\%. Compute $P(D|+)$. The answer may surprise you.",ref:"B&H \u00a72"},
@@ -654,7 +654,7 @@ const PLAN = [
         why:"Mean, variance, and covariance describe your data. Independence assumptions underlie naive Bayes and factored models.",
         py:"## Mean, Variance, and Covariance\n`np.mean`, `np.var`, and `np.cov` compute the empirical analogues of $\\mathbb{E}[X]$, $\\mathbb{V}[X]$, and $\\text{Cov}[X,Y]$ -- the building blocks of every summary statistic in ML.\n\n```python\nimport numpy as np\n\nrng = np.random.default_rng(0)\nX = rng.normal(loc=2, scale=1, size=1000)\nY = 0.5 * X + rng.normal(scale=0.5, size=1000)\n\nprint(np.mean(X), np.var(X))      # ~2.0, ~1.0\n\ncov = np.cov(X, Y)                # 2x2 covariance matrix\nprint(cov)\n\n# Independence check via correlation\ncorr = np.corrcoef(X, Y)[0, 1]\nprint(corr)  # close to 0 only if X, Y uncorrelated\n```\n\nNote `np.cov` uses the unbiased (n-1) estimator by default -- pass `bias=True` to match the $1/n$ formula often used in derivations.",
         resources:[
-          {name:"Blitzstein & Hwang \u2014 Ch 6 (expectation)", url:"https://projects.iq.harvard.edu/stat110/home"},
+          {name:"Blitzstein & Hwang \u2014 Ch 6 (expectation)", url:"https://stat110.hsites.harvard.edu/"},
           {name:"Khan Academy \u2014 Expected value and variance", url:"https://www.khanacademy.org/math/statistics-probability"},
         ],
         exs:[
@@ -668,7 +668,7 @@ const PLAN = [
         why:"The Gaussian is everywhere in ML: regression noise models, Gaussian processes, VAEs, and the Central Limit Theorem.",
         py:"## The Gaussian Distribution\nThe multivariate Gaussian $\\mathcal{N}(\\boldsymbol{\\mu},\\Sigma)$ is implemented by `scipy.stats.multivariate_normal` -- it underlies Gaussian processes, GMMs (Ch 11), and Bayesian linear regression (Ch 9).\n\n```python\nimport numpy as np\nfrom scipy.stats import multivariate_normal\n\nmu = np.array([0, 0])\nSigma = np.array([[1.0, 0.5], [0.5, 2.0]])\n\ndist = multivariate_normal(mean=mu, cov=Sigma)\n\nprint(dist.pdf([0, 0]))         # density at the mean\nsamples = dist.rvs(size=5, random_state=0)\nprint(samples)\n\n# Sampling via Cholesky (what's happening under the hood)\nL = np.linalg.cholesky(Sigma)\nz = np.random.randn(2)\nx = mu + L @ z\n```",
         resources:[
-          {name:"Blitzstein & Hwang \u2014 Ch 5 (Normal distribution)", url:"https://projects.iq.harvard.edu/stat110/home"},
+          {name:"Blitzstein & Hwang \u2014 Ch 5 (Normal distribution)", url:"https://stat110.hsites.harvard.edu/"},
           {name:"3Blue1Brown \u2014 Central Limit Theorem", url:"https://www.youtube.com/watch?v=zeJD6dqJ5lo"},
         ],
         exs:[
@@ -682,7 +682,7 @@ const PLAN = [
         why:"Conjugate priors make Bayesian inference analytically tractable \u2014 the key to efficient Bayesian ML.",
         py:"## Conjugate Priors\nA Beta-Bernoulli conjugate pair means the posterior stays Beta after observing data -- updating it is just adding counts to the prior's parameters, no integration required.\n\n```python\nfrom scipy import stats\nimport numpy as np\n\n# Prior: Beta(alpha=2, beta=2) belief about a coin's bias\nalpha, beta = 2, 2\n\n# Observe data: 7 heads, 3 tails\nheads, tails = 7, 3\n\n# Posterior is also Beta -- conjugacy means the update is closed-form\nposterior = stats.beta(alpha + heads, beta + tails)\nprint(posterior.mean())   # updated belief about p(heads)\nprint(posterior.std())    # uncertainty shrinks with more data\n```\n\nThis closed-form update is exactly why conjugate priors are computationally convenient -- no MCMC or variational inference needed.",
         resources:[
-          {name:"Blitzstein & Hwang \u2014 Ch 8 (conjugacy examples)", url:"https://projects.iq.harvard.edu/stat110/home"},
+          {name:"Blitzstein & Hwang \u2014 Ch 8 (conjugacy examples)", url:"https://stat110.hsites.harvard.edu/"},
         ],
         exs:[
           {q:"If $\\theta\\sim\\text{Beta}(\\alpha,\\beta)$ and $X|\\theta\\sim\\text{Binomial}(n,\\theta)$, show the posterior is $\\theta|X=k\\sim\\text{Beta}(\\alpha+k,\\beta+n-k)$.",ref:"B&H \u00a78"},
@@ -695,7 +695,7 @@ const PLAN = [
         why:"Normalising flows, the reparameterisation trick in VAEs, and density estimation all rely on this.",
         py:"## Change of Variables\nIf $Y=g(X)$, the change-of-variables formula $p_Y(y)=p_X(g^{-1}(y))\\left|\\frac{dg^{-1}}{dy}\\right|$ can be checked numerically by comparing a transformed-sample histogram to the analytic density.\n\n```python\nimport numpy as np\nfrom scipy import stats\nimport matplotlib.pyplot as plt\n\n# X ~ Uniform(0,1), Y = -log(X) ~ Exponential(1)\nrng = np.random.default_rng(0)\nx = rng.uniform(0, 1, size=100000)\ny = -np.log(x)\n\n# Compare empirical distribution of Y to the analytic Exponential(1) pdf\ngrid = np.linspace(0, 8, 200)\nplt.hist(y, bins=80, density=True, alpha=0.5)\nplt.plot(grid, stats.expon().pdf(grid))\n```\n\nThis \"transform a uniform sample\" trick (the inverse transform method) is how most random-number generators sample from non-uniform distributions.",
         resources:[
-          {name:"Blitzstein & Hwang \u2014 Ch 8 (transformations)", url:"https://projects.iq.harvard.edu/stat110/home"},
+          {name:"Blitzstein & Hwang \u2014 Ch 8 (transformations)", url:"https://stat110.hsites.harvard.edu/"},
         ],
         exs:[
           {q:"$X\\sim\\text{Uniform}(0,1)$. Let $Y=-\\log X$. Find the PDF of $Y$. (This is the inverse transform / inverse CDF method.)",ref:"B&H \u00a78"},
@@ -789,7 +789,7 @@ const PLAN = [
         py:"## Maximum Likelihood Estimation\nMLE finds the parameters that make the observed data most probable -- `scipy.optimize.minimize` on the negative log-likelihood is the general-purpose recipe when there's no closed form.\n\n```python\nimport numpy as np\nfrom scipy.optimize import minimize\nfrom scipy.stats import norm\n\ndata = np.random.normal(loc=3.0, scale=2.0, size=500)\n\ndef neg_log_likelihood(params):\n    mu, sigma = params\n    return -np.sum(norm.logpdf(data, mu, sigma))\n\nresult = minimize(neg_log_likelihood, x0=[0, 1], bounds=[(None,None),(1e-3,None)])\nprint(result.x)  # close to [3.0, 2.0]\n\n# For the Gaussian, MLE has a closed form too:\nprint(data.mean(), data.std())\n```",
         resources:[
           {name:"MML book \u00a78.3", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Stat 110 \u2014 MLE intuition", url:"https://projects.iq.harvard.edu/stat110/home"},
+          {name:"Stat 110 \u2014 MLE intuition", url:"https://stat110.hsites.harvard.edu/"},
         ],
         exs:[
           {q:"For $X_1,\\ldots,X_n\\sim\\mathcal{N}(\\mu,\\sigma^2)$ i.i.d., write the likelihood $p(\\mathbf{x}|\\mu,\\sigma^2)$ and the log-likelihood $\\log p(\\mathbf{x}|\\mu,\\sigma^2)$.",ref:"MML \u00a78.3"},
@@ -863,7 +863,7 @@ const PLAN = [
         py:"## Maximum Likelihood and Ridge Regression\nThe MLE for linear regression is ordinary least squares; adding a Gaussian prior on $\\boldsymbol{\\theta}$ gives MAP estimation, which is exactly ridge regression.\n\n```python\nimport numpy as np\nfrom sklearn.linear_model import LinearRegression, Ridge\n\nx = np.linspace(0, 10, 50).reshape(-1, 1)\ny = 2 * x.ravel() + 1 + np.random.randn(50) * 0.5\n\n# MLE = ordinary least squares\nols = LinearRegression().fit(x, y)\nprint(ols.coef_, ols.intercept_)\n\n# MAP with Gaussian prior = ridge regression\nridge = Ridge(alpha=1.0).fit(x, y)\nprint(ridge.coef_, ridge.intercept_)\n\n# Closed-form MLE: theta = (Phi^T Phi)^-1 Phi^T y\nPhi = np.column_stack([np.ones_like(x.ravel()), x.ravel()])\ntheta = np.linalg.inv(Phi.T @ Phi) @ Phi.T @ y\nprint(theta)\n```",
         resources:[
           {name:"MML book §9.2", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Strang 18.06 — Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 — Least Squares (Lec 16)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Starting from the negative log-likelihood $-\\log p(\\mathbf{y}|X,\\boldsymbol{\\theta})=\\frac{1}{2\\sigma^2}\\|\\mathbf{y}-X\\boldsymbol{\\theta}\\|^2+\\text{const}$, derive the normal equations $X^TX\\hat{\\boldsymbol{\\theta}}=X^T\\mathbf{y}$ by setting the gradient to zero.",ref:"MML §9.2"},
@@ -891,7 +891,7 @@ const PLAN = [
         py:"## Maximum Likelihood as Orthogonal Projection\nGeometrically, OLS finds $\\hat{\\mathbf{y}}=\\Phi\\hat{\\boldsymbol{\\theta}}$ as the *orthogonal projection* of $\\mathbf{y}$ onto the column space of $\\Phi$ -- the same projection formula from §3.8.\n\n```python\nimport numpy as np\n\nx = np.linspace(0, 10, 50)\ny = 2 * x + 1 + np.random.randn(50) * 0.5\nPhi = np.column_stack([np.ones_like(x), x])\n\n# Projection onto col(Phi)\nP = Phi @ np.linalg.inv(Phi.T @ Phi) @ Phi.T\ny_hat = P @ y\n\n# Residual is orthogonal to col(Phi)\nresidual = y - y_hat\nprint(np.allclose(Phi.T @ residual, 0, atol=1e-8))  # True\n```\n\nThe fact that the residual is orthogonal to every column of $\\Phi$ is precisely the normal-equations condition $\\Phi^T(\\mathbf{y}-\\Phi\\hat{\\boldsymbol{\\theta}})=\\mathbf{0}$.",
         resources:[
           {name:"MML book §9.4", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Strang 18.06 — Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 — Projections (Lec 15)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"Show that $\\hat{\\mathbf{y}}=X(X^TX)^{-1}X^T\\mathbf{y}=P\\mathbf{y}$ where $P$ is the projection matrix from §3.8. Why does this mean $\\hat{\\mathbf{y}}\\in\\text{col}(X)$?",ref:"MML §9.4"},
@@ -925,7 +925,7 @@ const PLAN = [
         py:"## Maximum Variance via Eigendecomposition\nThe directions of maximum variance are the eigenvectors of the data covariance matrix, ordered by eigenvalue -- this is PCA's defining computation, before any library wrapper.\n\n```python\nimport numpy as np\n\nX = np.random.randn(200, 3) @ np.array([[3,1,0],[1,2,0],[0,0,0.1]])\nX = X - X.mean(axis=0)  # center\n\nS = np.cov(X.T)                       # covariance matrix\neigvals, eigvecs = np.linalg.eigh(S)  # ascending order\n\n# Sort descending: top eigenvector = direction of max variance\norder = np.argsort(eigvals)[::-1]\nprint(eigvals[order])\nprint(eigvecs[:, order[0]])  # first principal component direction\n```",
         resources:[
           {name:"MML book §10.2", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"Strang 18.06 — Symmetric Matrices (Lec 25)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/pages/video-lectures/"},
+          {name:"Strang 18.06 — Symmetric Matrices (Lec 25)", url:"https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/video_galleries/video-lectures/"},
         ],
         exs:[
           {q:"For a unit vector $\\mathbf{b}_1$ ($\\|\\mathbf{b}_1\\|=1$), the variance of the projected data is $V_1=\\mathbf{b}_1^TS\\mathbf{b}_1$. Set up the constrained optimisation $\\max_{\\mathbf{b}_1} \\mathbf{b}_1^TS\\mathbf{b}_1$ s.t. $\\|\\mathbf{b}_1\\|^2=1$ using a Lagrange multiplier (recall §7.2).",ref:"MML §10.2"},
@@ -952,7 +952,7 @@ const PLAN = [
         py:"## Eigenvector Computation via SVD\nIn practice, PCA is computed via SVD of the (centered) data matrix, not by forming the covariance matrix explicitly -- more numerically stable, and what `sklearn.decomposition.PCA` does under the hood.\n\n```python\nimport numpy as np\n\nX = np.random.randn(200, 5)\nXc = X - X.mean(axis=0)\n\nU, S, Vt = np.linalg.svd(Xc, full_matrices=False)\n\n# Principal components = rows of Vt (= eigenvectors of covariance)\n# Singular values relate to eigenvalues by: eigval_i = S_i^2 / (n-1)\neigvals_from_svd = S**2 / (X.shape[0] - 1)\nprint(eigvals_from_svd)\n\n# Low-rank approximation, keeping top k components\nk = 2\nX_approx = U[:, :k] @ np.diag(S[:k]) @ Vt[:k, :]\n```",
         resources:[
           {name:"MML book §10.4", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"3Blue1Brown — SVD visual", url:"https://www.youtube.com/watch?v=vSczTbgc8Rc"},
+          {name:"Visual Kernel — SVD Visualized", url:"https://www.youtube.com/watch?v=vSczTbgc8Rc"},
         ],
         exs:[
           {q:"For centred data matrix $X\\in\\mathbb{R}^{N\\times D}$ (rows = samples), the covariance is $S=\\frac{1}{N}X^TX$. If $X=U\\Sigma V^T$ is the SVD of $X$, express $S$ in terms of $V$, $\\Sigma$, and $N$. What do the columns of $V$ represent?",ref:"MML §10.4"},
@@ -1041,7 +1041,7 @@ const PLAN = [
         py:"## The EM Algorithm\nEM alternates an E-step (compute responsibilities $r_{nk}$) and an M-step (update $\\pi_k,\\boldsymbol{\\mu}_k,\\Sigma_k$ given those responsibilities) -- here it is from scratch for a 1D, 2-component GMM.\n\n```python\nimport numpy as np\nfrom scipy.stats import norm\n\nX = np.concatenate([np.random.normal(-2,1,300), np.random.normal(3,1.5,700)])\npis, mus, sigmas = [0.5,0.5], [0.0,1.0], [1.0,1.0]\n\nfor it in range(50):\n    # E-step: responsibilities\n    r = np.array([p*norm.pdf(X,m,s) for p,m,s in zip(pis,mus,sigmas)])\n    r /= r.sum(axis=0)\n\n    # M-step: update parameters\n    Nk = r.sum(axis=1)\n    mus = (r @ X) / Nk\n    sigmas = np.sqrt((r * (X - mus[:,None])**2).sum(axis=1) / Nk)\n    pis = Nk / len(X)\n\nprint(pis, mus, sigmas)\n```\n\nEach EM iteration provably increases (never decreases) the log-likelihood -- a useful invariant to assert when debugging your own implementation.",
         resources:[
           {name:"MML book §11.3", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"StatQuest — EM Algorithm", url:"https://www.youtube.com/c/joshstarmer"},
+          {name:"Victor Lavrenko — Visualizing the EM Algorithm", url:"https://www.youtube.com/watch?v=XLKoTqGao7U"},
         ],
         exs:[
           {q:"State the EM algorithm for GMMs in two steps: (E-step) compute $r_{nk}$ for all $n,k$ given current $\\boldsymbol{\\theta}$; (M-step) update $\\boldsymbol{\\mu}_k,\\boldsymbol{\\Sigma}_k,\\pi_k$ given $r_{nk}$. Why must these alternate rather than being solved simultaneously?",ref:"MML §11.3"},
@@ -1089,7 +1089,7 @@ const PLAN = [
         py:"## The Primal SVM with scikit-learn\n`sklearn.svm.SVC(kernel='linear')` solves the primal soft-margin SVM, $\\min_{\\mathbf{w},b}\\frac{1}{2}\\|\\mathbf{w}\\|^2+C\\sum_n\\xi_n$ -- the $C$ parameter directly controls the margin/violation trade-off from this section.\n\n```python\nimport numpy as np\nfrom sklearn.svm import SVC\n\nX = np.vstack([np.random.randn(20,2)+[2,2], np.random.randn(20,2)+[-2,-2]])\ny = np.array([1]*20 + [-1]*20)\n\nclf = SVC(kernel='linear', C=1.0).fit(X, y)\n\nprint(clf.coef_, clf.intercept_)   # w, b\nprint(clf.support_vectors_.shape)  # points with nonzero alpha (slack)\n```\n\nA small `C` allows more margin violations (wider margin, more bias); a large `C` penalizes violations heavily (narrower margin, can overfit) -- try both and compare `clf.support_vectors_`.",
         resources:[
           {name:"MML book §12.2", url:"https://mml-book.github.io/book/mml-book.pdf"},
-          {name:"StatQuest — Support Vector Machines", url:"https://www.youtube.com/c/joshstarmer"},
+          {name:"StatQuest — Support Vector Machines (Part 1)", url:"https://www.youtube.com/watch?v=efR1C6CvhmE"},
         ],
         exs:[
           {q:"The hard-margin SVM maximises the margin $\\frac{2}{\\|\\mathbf{w}\\|}$ subject to $y_n(\\mathbf{w}^T\\mathbf{x}_n+b)\\geq 1$ for all $n$. Show this is equivalent to minimising $\\frac{1}{2}\\|\\mathbf{w}\\|^2$ subject to the same constraints. Why is the squared norm preferred over $\\|\\mathbf{w}\\|$ for optimisation?",ref:"MML §12.2"},
